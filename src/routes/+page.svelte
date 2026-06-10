@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
+	import { onMount, onDestroy } from 'svelte';
 	import Header from '$lib/components/Header.svelte';
 	import StatCard from '$lib/components/StatCard.svelte';
 	import FilterBar from '$lib/components/FilterBar.svelte';
@@ -17,8 +17,19 @@
 	import { fetchTransactions } from '$lib/api';
 	import { formatRp } from '$lib/utils/format';
 
+	let sseConn: EventSource | null = null;
+
 	onMount(async () => {
-		loading.set(true);
+		await loadData();
+		connectSSE();
+	});
+
+	onDestroy(() => {
+		sseConn?.close();
+	});
+
+	async function loadData(showLoader = true) {
+		if (showLoader) loading.set(true);
 		try {
 			const result = await fetchTransactions({ pageSize: 500 });
 			transactions.set(result.data);
@@ -28,9 +39,34 @@
 			console.error('Failed to load data:', err);
 			connected.set(false);
 		} finally {
-			loading.set(false);
+			if (showLoader) loading.set(false);
 		}
-	});
+	}
+
+	function connectSSE() {
+		sseConn = new EventSource('/api/realtime');
+
+		sseConn.onopen = () => {
+			connected.set(true);
+			console.log('[SSE] Terhubung — auto-sync aktif');
+		};
+
+		sseConn.onmessage = async (event) => {
+			try {
+				const data = JSON.parse(event.data);
+				if (data.type === 'update' || data.type === 'refresh') {
+					console.log('[SSE] Perubahan terdeteksi, re-fetch data...');
+					await loadData(false);
+				}
+			} catch { /* abaikan parse error */ }
+		};
+
+		// EventSource auto-reconnect bawaan browser akan handle putus koneksi
+		sseConn.onerror = () => {
+			connected.set(false);
+			console.warn('[SSE] Koneksi terputus — auto-reconnect browser mencoba...');
+		};
+	}
 </script>
 
 <Header />
@@ -82,7 +118,12 @@
 
 		<!-- Monthly Trend -->
 		{#if $monthlyTrend.length > 0}
-			<CashChart data={$monthlyTrend.map(m => ({ label: m.month, income: m.income, expense: m.expense }))} title="Tren Bulanan" type="bar" height={280} />
+			{@const trendData = $monthlyTrend.map(m => ({
+				label: new Date(m.month + '-01').toLocaleDateString('id-ID', { month: 'short', year: '2-digit' }),
+				income: m.income,
+				expense: m.expense
+			}))}
+			<CashChart data={trendData} title="Tren Bulanan" type="bar" height={320} showNet={true} />
 		{/if}
 
 		<!-- Forecast -->
