@@ -1,13 +1,6 @@
 <script lang="ts">
 	import type { Transaksi } from '$lib/types';
-
-	function formatTanggal(tgl: string): string {
-		const hari = ['Minggu','Senin','Selasa','Rabu','Kamis','Jumat','Sabtu'];
-		const parts = tgl.split('-');
-		if (parts.length !== 3) return tgl;
-		const d = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]));
-		return `${hari[d.getDay()]}, ${parts[2]}/${parts[1]}/${parts[0]}`;
-	}
+	import { formatTanggal, formatRp } from '$lib/utils/format';
 
 	interface Props {
 		data: Transaksi[];
@@ -75,9 +68,6 @@
 		URL.revokeObjectURL(url);
 	}
 
-	function formatRp(n: number): string {
-		return 'Rp ' + n.toLocaleString('id-ID');
-	}
 </script>
 
 <div class="card">

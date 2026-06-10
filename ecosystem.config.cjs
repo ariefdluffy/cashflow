@@ -3,12 +3,13 @@ module.exports = {
 		{
 			name: "cashflow-dashboard",
 			script: "build/index.js",
-			interpreter: "bun",
+
+			// Env di .env — dotenv load otomatis via hooks.server.ts
+			// Hanya override yg beda utk production di sini
 			env: {
-				NODE_ENV: "production",
-				PORT: 3000,
-				ORIGIN: "https://cashflow.example.com"
+				NODE_ENV: "production"
 			},
+
 			instances: 1,
 			exec_mode: "fork",
 			watch: false,

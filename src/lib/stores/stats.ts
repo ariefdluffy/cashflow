@@ -157,23 +157,28 @@ export const forecast = derived(
 	}
 );
 
-// Derived: burn rate
+// Derived: burn rate (hitung dari ALL transaksi, bukan filtered)
 export const burnRate = derived(
-	[transactions, stats],
-	([$tx, $stats]) => {
+	transactions,
+	($tx) => {
 		const expense = $tx.filter(t => t.jenis === 'Keluar');
+		const income = $tx.filter(t => t.jenis === 'Masuk');
 		if (expense.length === 0) return { daysRemaining: 0, averageDailyExpense: 0, currentBalance: 0 } satisfies BurnRateInfo;
+
+		const totalExpense = expense.reduce((s, t) => s + t.nominal, 0);
+		const totalIncome = income.reduce((s, t) => s + t.nominal, 0);
+		const balance = totalIncome - totalExpense;
 
 		const dates = [...new Set(expense.map(t => t.tanggal))].sort();
 		const dayCount = dates.length || 1;
-		const avgDailyExpense = Math.round($stats.totalExpense / dayCount);
+		const avgDailyExpense = Math.round(totalExpense / dayCount);
 
-		const daysRemaining = avgDailyExpense > 0 ? Math.floor($stats.balance / avgDailyExpense) : 999;
+		const daysRemaining = avgDailyExpense > 0 ? Math.floor(balance / avgDailyExpense) : 999;
 
 		return {
 			daysRemaining,
 			averageDailyExpense: avgDailyExpense,
-			currentBalance: $stats.balance
+			currentBalance: balance
 		} satisfies BurnRateInfo;
 	}
 );

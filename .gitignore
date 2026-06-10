@@ -21,4 +21,12 @@ Thumbs.db
 # Vite
 vite.config.js.timestamp-*
 vite.config.ts.timestamp-*
-*.json
+
+# Private keys
+cashflow-dashboard-*-*.json
+
+# Don't ignore package.json / tsconfig.json
+!package.json
+!package-lock.json
+!tsconfig.json
+!svelte.config.js
