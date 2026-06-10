@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "cashflow-dashboard-499013",
+  "private_key_id": "387e3733525833799b8237c074eba20d53ddd5a9",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCsvEOdVHBdE0g4\nCjwkMERiSJ5+7eNSe5NjIRsKuWU6Iz+3WIxT8fxhoV6sUgMkS24L6hh7b8QCg1/P\niLqBiS9l8GoyeAhCidTP/3FMtB2wusRvgQjeXgMwqn3NV0h+h9VRlnBC03uMgD+G\nAKuMbIL9JjIDPfzJfwGUFHynX8aEFg7asHq1KoS/gI/DDc+awUAQ4/VqsbK9EcrE\nzVxtv9vHoUUBKYEzQSluldF9d0r95Q0Iyr8k7vTRQBXRRVo8aeh4jEV4QwyZPjx8\nQVVPIoZvOGvrj04hHadrA/5GCbuwywD72Scw7Z/j/XL5v89cr6pZaT5RpQqSxS1S\naKQ6qHMnAgMBAAECggEAFWXbAGXh533If/ywl5ENH5m8XJ/ufZzGVMzYkzsFMa8F\nKRrEg2+iIpwBZNph/kCD2OD+eGgPgXoxx7050Wsjnn6qQSdCaq+1V7DeobBcTzTL\nub5j0VwXDBPKssHBvr7n64v1yyl0kCKg++IgXixhC6gMIP+wTWu4z9W73WYNavY2\ncvIWyYqfT+NdvZhou8YPNrxrZHI60s3otDJCiEkEfyHMh4l66iZs8YIULv2ET/Td\njQNLwq+8vZqjVc11ZYhc+lcDKQU5KsrJZm3bJ2cAECqFHM1Zir+geh8OKLiz5xbA\nCKk5RjUBFW9TwtNKYwWQVj5rg079p8d4VYYL3r6j0QKBgQDXDV/kG1xQ5ceZioJ6\nrurleoiJtFPt+C4WeZ9kZqeGvFF0/qe257fh+erqiPYSmZ98o9SnRQ1WkY6mAiFr\nE0UXDKMCoFIVQF9QxwnnamzWNkUvXci60B78eu2gYBs/7o5jPOCcolEpkzBIhtx1\nWaNdtmpvESUJDvwpHnKLu9J/MQKBgQDNoCyaFMFTcjXH4mxTEh/zu8A+Qwvqm4bW\n7eP8RHjonRA4qC4+yhEu3LWyNs/quhlGnHbNUMTs7a4IekapVNMRkZ/2fEtljeEL\nC3d8W94lbNG1UJJMfYebqwd9fETlPjAYAHz3PMpNRwdutnYle+ZGbkesjvw/Kzyg\n18tbLatx1wKBgGlhuXK7YaKW5xe7gzMBUkQ/pnbschB0BImo8c2ubDufPr95JtB/\nfmFzKYXitcrpkvjuA4AwW1fnniKFesDQwZOI8ryPuYmGcO7Rim3nfgv+riqG5517\n7SNGTfm//rp2eTnyFBNNiz43TXrM821iDqcWg9OHcEGfITw5GmKVGJKRAoGAA/je\nI7PW8De6ljvnf8tP1rN/yTQeXM/YUPqTduITu9qc35tQGWJp5o/Y6rJoXc5ugpCv\nMtQmmbUVsZA7ITZERYicoHRSOIn/GOmFy18y8WIiwu/lg5jBL96j7GakJhGHeE86\nGsSP2+JNYHQh4CN+lUm4FLtGYCoDp8/DW+WL9E0CgYA8fsGKBxj4/Cd5Tw6fo+O7\nptlPEI64Bv89dLAHU9Jz7A2Fk4fX/PujwHBHlxCWSEczUf+DJtFLJOjICVfHZ3a3\nRQk+EuK+A17I8E1OUDJe2VFnbm4DeOICV5BKKn8hm1hg0aE2DY4FNiQVaPLAMm7V\n18xicnVTNJG71rZke83Jig==\n-----END PRIVATE KEY-----\n",
+  "client_email": "cashflow-sheets@cashflow-dashboard-499013.iam.gserviceaccount.com",
+  "client_id": "107115403032549552257",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/cashflow-sheets%40cashflow-dashboard-499013.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
