@@ -2,9 +2,9 @@ module.exports = {
 	apps: [
 		{
 			name: "cashflow-dashboard",
-			script: "build/index.js",
+			script: "start.js",
 
-			// Env di .env — dotenv load otomatis via hooks.server.ts
+			// Env di .env — dotenv preload via start.js wrapper
 			// Hanya override yg beda utk production di sini
 			env: {
 				NODE_ENV: "production"
