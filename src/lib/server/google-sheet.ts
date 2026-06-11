@@ -166,11 +166,19 @@ function parseSheetRows(rows: string[][]): Transaksi[] {
 					parseInt(timeParts[1] || '0'),
 					parseInt(timeParts[2] || '0')
 				);
-				tanggal = d.toISOString().split('T')[0];
+				// Pakai local date, bukan UTC. Hindari toISOString() yg paksa UTC.
+				const y = d.getFullYear();
+				const m = String(d.getMonth() + 1).padStart(2, '0');
+				const day = String(d.getDate()).padStart(2, '0');
+				tanggal = `${y}-${m}-${day}`;
 				timestamp = d.getTime();
 			} else {
 				timestamp = new Date(tanggal).getTime() || Date.now();
-				tanggal = new Date(timestamp).toISOString().split('T')[0];
+				const d = new Date(timestamp);
+				const y = d.getFullYear();
+				const m = String(d.getMonth() + 1).padStart(2, '0');
+				const day = String(d.getDate()).padStart(2, '0');
+				tanggal = `${y}-${m}-${day}`;
 			}
 		}
 

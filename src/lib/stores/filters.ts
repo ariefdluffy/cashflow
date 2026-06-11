@@ -10,9 +10,16 @@ export const filterStore = writable<FilterParams>({
 /**
  * Calculate date range from a preset.
  */
+function toLocalDateString(d: Date): string {
+	const year = d.getFullYear();
+	const month = String(d.getMonth() + 1).padStart(2, '0');
+	const day = String(d.getDate()).padStart(2, '0');
+	return `${year}-${month}-${day}`;
+}
+
 export function getDateRange(preset: FilterParams['preset']): { startDate: string; endDate: string } {
 	const now = new Date();
-	const end = now.toISOString().split('T')[0];
+	const end = toLocalDateString(now);
 
 	switch (preset) {
 		case 'today': {
@@ -21,20 +28,20 @@ export function getDateRange(preset: FilterParams['preset']): { startDate: strin
 		case '7days': {
 			const start = new Date(now);
 			start.setDate(start.getDate() - 7);
-			return { startDate: start.toISOString().split('T')[0], endDate: end };
+			return { startDate: toLocalDateString(start), endDate: end };
 		}
 		case '30days': {
 			const start = new Date(now);
 			start.setDate(start.getDate() - 30);
-			return { startDate: start.toISOString().split('T')[0], endDate: end };
+			return { startDate: toLocalDateString(start), endDate: end };
 		}
 		case 'this-month': {
 			const start = new Date(now.getFullYear(), now.getMonth(), 1);
-			return { startDate: start.toISOString().split('T')[0], endDate: end };
+			return { startDate: toLocalDateString(start), endDate: end };
 		}
 		case 'this-year': {
 			const start = new Date(now.getFullYear(), 0, 1);
-			return { startDate: start.toISOString().split('T')[0], endDate: end };
+			return { startDate: toLocalDateString(start), endDate: end };
 		}
 		default: {
 			return { startDate: '2026-01-01', endDate: end };
