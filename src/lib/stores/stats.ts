@@ -7,7 +7,7 @@ export const loading = writable<boolean>(true);
 export const lastSync = writable<string>('');
 export const connected = writable<boolean>(false);
 
-// Derived: filtered transactions based on filterStore
+// Derived: filtered transactions based on filterStore, sorted by tanggal desc (terbaru di atas)
 export const filteredTransactions = derived(
 	[transactions, filterStore],
 	([$transactions, $filterStore]) => {
@@ -15,13 +15,18 @@ export const filteredTransactions = derived(
 			? getDateRange($filterStore.preset)
 			: { startDate: $filterStore.startDate || '', endDate: $filterStore.endDate || '' };
 
-		if (!startDate && !endDate) return $transactions;
+		let result = $transactions;
 
-		return $transactions.filter(t => {
-			if (startDate && t.tanggal < startDate) return false;
-			if (endDate && t.tanggal > endDate) return false;
-			return true;
-		});
+		if (startDate || endDate) {
+			result = result.filter(t => {
+				if (startDate && t.tanggal < startDate) return false;
+				if (endDate && t.tanggal > endDate) return false;
+				return true;
+			});
+		}
+
+		// Sort by tanggal desc (terbaru di atas) biar konsisten
+		return [...result].sort((a, b) => a.tanggal < b.tanggal ? 1 : a.tanggal > b.tanggal ? -1 : 0);
 	}
 );
 
@@ -102,7 +107,7 @@ export const categoryData = derived(
 	}
 );
 
-// Derived: activity log
+// Derived: activity log (pake ALL transaksi biar log gak ilang pas filter berubah)
 export const activityLog = derived(
 	transactions,
 	($tx) => {
@@ -118,7 +123,7 @@ export const activityLog = derived(
 	}
 );
 
-// Derived: forecast (30-day moving average)
+// Derived: forecast 30 hari (pake ALL transaksi = prediksi lebih akurat)
 export const forecast = derived(
 	transactions,
 	($tx) => {
@@ -157,7 +162,7 @@ export const forecast = derived(
 	}
 );
 
-// Derived: burn rate (hitung dari ALL transaksi, bukan filtered)
+// Derived: burn rate (pake ALL — perlu total historis buat hitung rata-rata harian)
 export const burnRate = derived(
 	transactions,
 	($tx) => {
@@ -189,7 +194,7 @@ export const topCategories = derived(
 	($cat) => $cat.slice(0, 5)
 );
 
-// Derived: monthly trend
+// Derived: monthly trend (pake ALL — biar bisa compare antar bulan, gak kepotong filter)
 export const monthlyTrend = derived(
 	transactions,
 	($tx) => {

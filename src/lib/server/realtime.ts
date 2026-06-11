@@ -5,11 +5,7 @@ type SSECallback = (data: unknown) => void;
 class RealtimeService {
 	private clients = new Map<string, SSECallback>();
 	private pollInterval: ReturnType<typeof setInterval> | null = null;
-	private lastDataHash = '';
 
-	/**
-	 * Register a client SSE callback.
-	 */
 	register(id: string, callback: SSECallback): void {
 		this.clients.set(id, callback);
 		if (this.clients.size === 1) {
@@ -17,9 +13,6 @@ class RealtimeService {
 		}
 	}
 
-	/**
-	 * Unregister a client.
-	 */
 	unregister(id: string): void {
 		this.clients.delete(id);
 		if (this.clients.size === 0) {
@@ -27,9 +20,6 @@ class RealtimeService {
 		}
 	}
 
-	/**
-	 * Broadcast data to all connected clients.
-	 */
 	broadcast(data: unknown): void {
 		for (const callback of this.clients.values()) {
 			try {
@@ -41,7 +31,8 @@ class RealtimeService {
 	}
 
 	/**
-	 * Notify clients of an update.
+	 * Notify clients of an update (dipanggil dari Drive webhook).
+	 * Langsung invalidate cache + broadcast.
 	 */
 	notifyUpdate(): void {
 		invalidateCache();
@@ -49,7 +40,7 @@ class RealtimeService {
 	}
 
 	private startPolling(): void {
-		// Poll every 30 seconds as per PRD
+		// Fallback polling tiap 30 detik kalo webhook gak aktif
 		this.pollInterval = setInterval(() => {
 			this.checkForUpdates();
 		}, 30_000);
@@ -64,12 +55,12 @@ class RealtimeService {
 
 	private async checkForUpdates(): Promise<void> {
 		try {
-			// In a real implementation, this would check a hash/etag
-			// For now, we just invalidate cache and broadcast
-			invalidateCache();
+			// Broadcast refresh — frontend bakal re-fetch.
+			// GAK invalidate cache biar Google Sheet API gak dipanggil tiap 30 detik
+			// kalo data gak berubah. Cache di google-sheet.ts punya TTL 30s sendiri.
 			this.broadcast({ type: 'refresh', timestamp: Date.now() });
 		} catch (err) {
-			console.error('Polling error:', err);
+			console.error('[Realtime] Polling error:', err);
 		}
 	}
 }

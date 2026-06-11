@@ -1,11 +1,30 @@
 <script lang="ts">
+	import { onMount } from 'svelte';
 	import { lastSync, connected } from '$lib/stores/stats';
 
 	let darkMode = $state(false);
 
+	onMount(() => {
+		// Baca preferensi dari localStorage, fallback ke system preference
+		const saved = localStorage.getItem('theme');
+		if (saved === 'dark') {
+			darkMode = true;
+			document.documentElement.classList.add('dark');
+		} else if (saved === 'light') {
+			darkMode = false;
+			document.documentElement.classList.remove('dark');
+		} else {
+			// Otomatis dari system
+			const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+			darkMode = prefersDark;
+			document.documentElement.classList.toggle('dark', prefersDark);
+		}
+	});
+
 	function toggleDark() {
 		darkMode = !darkMode;
 		document.documentElement.classList.toggle('dark', darkMode);
+		localStorage.setItem('theme', darkMode ? 'dark' : 'light');
 	}
 
 	function formatDate(timestamp: string): string {

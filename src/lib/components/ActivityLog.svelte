@@ -1,15 +1,12 @@
 <script lang="ts">
 	import type { ActivityLog } from '$lib/types';
+	import { formatRp } from '$lib/utils/format';
 
 	interface Props {
 		data: ActivityLog[];
 	}
 
 	let { data }: Props = $props();
-
-	function formatRp(n: number): string {
-		return 'Rp ' + n.toLocaleString('id-ID');
-	}
 </script>
 
 <div class="card">

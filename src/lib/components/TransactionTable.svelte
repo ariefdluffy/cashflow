@@ -32,7 +32,8 @@
 			const bVal = b[sortColumn as keyof Transaksi] ?? '';
 			let cmp: number;
 			if (typeof aVal === 'string' && typeof bVal === 'string') {
-				cmp = aVal.localeCompare(bVal);
+				// Pake operator langsung, bukan localeCompare — lebih konsisten
+				cmp = aVal < bVal ? -1 : aVal > bVal ? 1 : 0;
 			} else {
 				cmp = (aVal as number) - (bVal as number);
 			}
