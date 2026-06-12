@@ -11,7 +11,7 @@
 		{ value: 'all', label: 'Semua' },
 	];
 
-	let currentPreset = $state<FilterParams['preset']>('30days');
+	let currentPreset = $state<FilterParams['preset']>('today');
 	let startDate = $state('');
 	let endDate = $state('');
 	let showCustom = $state(false);

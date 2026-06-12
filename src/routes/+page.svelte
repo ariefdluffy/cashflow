@@ -7,12 +7,13 @@
 	import CategoryChart from '$lib/components/CategoryChart.svelte';
 	import TransactionTable from '$lib/components/TransactionTable.svelte';
 	import ActivityLog from '$lib/components/ActivityLog.svelte';
-	import ForecastTable from '$lib/components/ForecastTable.svelte';
+	import DataInsights from '$lib/components/DataInsights.svelte';
 	import TopCategories from '$lib/components/TopCategories.svelte';
 	import {
 		transactions, loading, lastSync, connected,
 		filteredTransactions, stats, chartData, categoryData,
-		activityLog, forecast, burnRate, topCategories, monthlyTrend
+		activityLog, forecast, burnRate, topCategories, monthlyTrend,
+		incomeCategoryData, categoryComparison
 	} from '$lib/stores/stats';
 	import { fetchTransactions } from '$lib/api';
 	import { formatRp } from '$lib/utils/format';
@@ -126,9 +127,9 @@
 			<CashChart data={trendData} title="Tren Bulanan" type="bar" height={320} showNet={true} />
 		{/if}
 
-		<!-- Forecast -->
-		{#if $forecast.length > 0}
-			<ForecastTable data={$forecast} />
+		<!-- Data Insights (gantikan Forecast) -->
+		{#if $incomeCategoryData.length > 0 || $categoryComparison.length > 0 || $monthlyTrend.length > 0}
+			<DataInsights />
 		{/if}
 
 		<!-- Activity Log + Table + Top Categories -->

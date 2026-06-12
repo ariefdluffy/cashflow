@@ -194,6 +194,48 @@ export const topCategories = derived(
 	($cat) => $cat.slice(0, 5)
 );
 
+// Derived: income category breakdown (baru — gak ditampilkan sebelumnya)
+export const incomeCategoryData = derived(
+	filteredTransactions,
+	($tx) => {
+		const income = $tx.filter(t => t.jenis === 'Masuk');
+		const grouped = new Map<string, number>();
+		let total = 0;
+		for (const t of income) {
+			grouped.set(t.kategori, (grouped.get(t.kategori) || 0) + t.nominal);
+			total += t.nominal;
+		}
+		return Array.from(grouped.entries())
+			.map(([kategori, totalKategori]) => ({
+				kategori,
+				total: totalKategori,
+				persentase: total > 0 ? Math.round((totalKategori / total) * 100) : 0
+			}))
+			.sort((a, b) => b.total - a.total);
+	}
+);
+
+// Derived: category comparison income vs expense per category (baru)
+export const categoryComparison = derived(
+	filteredTransactions,
+	($tx) => {
+		const incomeMap = new Map<string, number>();
+		const expenseMap = new Map<string, number>();
+		for (const t of $tx) {
+			if (t.jenis === 'Masuk') incomeMap.set(t.kategori, (incomeMap.get(t.kategori) || 0) + t.nominal);
+			else expenseMap.set(t.kategori, (expenseMap.get(t.kategori) || 0) + t.nominal);
+		}
+		const allCats = new Set([...incomeMap.keys(), ...expenseMap.keys()]);
+		return Array.from(allCats)
+			.map(k => ({
+				kategori: k,
+				income: incomeMap.get(k) || 0,
+				expense: expenseMap.get(k) || 0
+			}))
+			.sort((a, b) => Math.max(b.income, b.expense) - Math.max(a.income, a.expense));
+	}
+);
+
 // Derived: monthly trend (pake ALL — biar bisa compare antar bulan, gak kepotong filter)
 export const monthlyTrend = derived(
 	transactions,
