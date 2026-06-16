@@ -3,6 +3,7 @@ export type JenisTransaksi = 'Masuk' | 'Keluar';
 export interface Transaksi {
 	id: string;
 	tanggal: string;
+	user: string;
 	kategori: string;
 	keterangan: string;
 	jenis: JenisTransaksi;
@@ -42,6 +43,7 @@ export interface FilterParams {
 	startDate: string | null;
 	endDate: string | null;
 	preset: 'today' | '7days' | '30days' | 'this-month' | 'this-year' | 'custom' | 'all';
+	user: string | null;
 }
 
 export interface ForecastData {

@@ -1,0 +1,27 @@
+{
+	"income": {
+		"Gaji": ["gaji", "upah", "honor", "tpp"],
+		"Penjualan": ["jual", "order", "produk", "dagang"],
+		"Investasi": ["investasi", "dividen", "bunga", "saham"],
+		"Pendanaan": ["pinjam", "hutang", "kredit", "modal"],
+		"Pendapatan Lain": ["refund", "komisi", "affiliate"]
+	},
+	"expense": {
+		"Makanan": ["makan", "minum", "warung", "restoran", "kafe", "cafe", "roti", "kue", "kurma", "udang", "tahu"],
+		"Utilitas": ["listrik", "air", "pdam", "token", "pln", "internet", "indihome", "telpon", "pulsa"],
+		"Transportasi": ["bensin", "parkir", "tol", "mobil", "motor", "transport", "bahan bakar", "oli", "bearing", "kampas"],
+		"Belanja": ["pasar", "belanja", "beli", "sembako", "swalayan", "alfamart", "indomaret", "baju", "songkok", "parcel"],
+		"Sewa": ["sewa", "kontrak", "kos"],
+		"Rumah Tangga": ["rumah"],
+		"Gaji Karyawan": ["gaji", "thr", "bonus"],
+		"Marketing": ["iklan", "promo", "sponsor", "ads"],
+		"Hosting & Domain": ["hosting", "domain", "server", "ssl", "vps"],
+		"Pajak & Asuransi": ["pajak", "bpjs", "asuransi"],
+		"Kesehatan": ["obat", "dokter", "rumah sakit", "berobat"],
+		"Hiburan": ["hiburan", "game", "netflix", "spotify", "nonton"],
+		"Travel": ["hotel", "penginapan"],
+		"Pendidikan": ["sekolah", "buku", "kursus", "les", "spp", "uang saku"],
+		"Penarikan Tunai": ["tarik tunai"],
+		"Lainnya": ["patungan"]
+	}
+}

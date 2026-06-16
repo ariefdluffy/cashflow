@@ -15,123 +15,37 @@ let cachedData: Transaksi[] | null = null;
 let lastFetch = 0;
 const CACHE_TTL = 30_000;
 
-// --- Category classification ---
-const incomeKeywords: [string, string][] = [
-	['gaji', 'Gaji'],
-	['upah', 'Gaji'],
-	['honor', 'Gaji'],
-	['tpp', 'Gaji'],
-	['jual', 'Penjualan'],
-	['order', 'Penjualan'],
-	['produk', 'Penjualan'],
-	['dagang', 'Penjualan'],
-	['investasi', 'Investasi'],
-	['dividen', 'Investasi'],
-	['bunga', 'Investasi'],
-	['saham', 'Investasi'],
-	['pinjam', 'Pendanaan'],
-	['hutang', 'Pendanaan'],
-	['kredit', 'Pendanaan'],
-	['modal', 'Pendanaan'],
-	['refund', 'Pendapatan Lain'],
-	['komisi', 'Pendapatan Lain'],
-	['affiliate', 'Pendapatan Lain'],
-];
+import categories from '$lib/config/categories.json';
 
-const expenseKeywords: [string, string][] = [
-	['makan', 'Makanan'],
-	['minum', 'Makanan'],
-	['warung', 'Makanan'],
-	['restoran', 'Makanan'],
-	['kafe', 'Makanan'],
-	['cafe', 'Makanan'],
-	['roti', 'Makanan'],
-	['kue', 'Makanan'],
-	['kurma', 'Makanan'],
-	['udang', 'Makanan'],
-	['tahu', 'Makanan'],
-	['listrik', 'Utilitas'],
-	['air', 'Utilitas'],
-	['pdam', 'Utilitas'],
-	['token', 'Utilitas'],
-	['pln', 'Utilitas'],
-	['internet', 'Utilitas'],
-	['indihome', 'Utilitas'],
-	['telpon', 'Utilitas'],
-	['pulsa', 'Utilitas'],
-	['bensin', 'Transportasi'],
-	['parkir', 'Transportasi'],
-	['tol', 'Transportasi'],
-	['mobil', 'Transportasi'],
-	['motor', 'Transportasi'],
-	['transport', 'Transportasi'],
-	['bahan bakar', 'Transportasi'],
-	['oli', 'Transportasi'],
-	['bearing', 'Transportasi'],
-	['kampas', 'Transportasi'],
-	['pasar', 'Belanja'],
-	['belanja', 'Belanja'],
-	['beli', 'Belanja'],
-	['sembako', 'Belanja'],
-	['swalayan', 'Belanja'],
-	['alfamart', 'Belanja'],
-	['indomaret', 'Belanja'],
-	['baju', 'Belanja'],
-	['songkok', 'Belanja'],
-	['parcel', 'Belanja'],
-	['sewa', 'Sewa'],
-	['kontrak', 'Sewa'],
-	['kos', 'Sewa'],
-	['rumah', 'Rumah Tangga'],
-	['gaji', 'Gaji Karyawan'],
-	['thr', 'Gaji Karyawan'],
-	['bonus', 'Gaji Karyawan'],
-	['iklan', 'Marketing'],
-	['promo', 'Marketing'],
-	['sponsor', 'Marketing'],
-	['ads', 'Marketing'],
-	['hosting', 'Hosting & Domain'],
-	['domain', 'Hosting & Domain'],
-	['server', 'Hosting & Domain'],
-	['ssl', 'Hosting & Domain'],
-	['vps', 'Hosting & Domain'],
-	['pajak', 'Pajak & Asuransi'],
-	['bpjs', 'Pajak & Asuransi'],
-	['asuransi', 'Pajak & Asuransi'],
-	['obat', 'Kesehatan'],
-	['dokter', 'Kesehatan'],
-	['rumah sakit', 'Kesehatan'],
-	['berobat', 'Kesehatan'],
-	['hiburan', 'Hiburan'],
-	['game', 'Hiburan'],
-	['netflix', 'Hiburan'],
-	['spotify', 'Hiburan'],
-	['nonton', 'Hiburan'],
-	['hotel', 'Travel'],
-	['penginapan', 'Travel'],
-	['sekolah', 'Pendidikan'],
-	['buku', 'Pendidikan'],
-	['kursus', 'Pendidikan'],
-	['les', 'Pendidikan'],
-	['spp', 'Pendidikan'],
-	['uang saku', 'Pendidikan'],
-	['tarik tunai', 'Penarikan Tunai'],
-	['patungan', 'Lainnya'],
-];
+// --- Category classification ---
+
+/** Escape regex special chars for safe word-boundary matching */
+function escRe(s: string): string {
+	return s.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+type Rule = { regex: RegExp; kategori: string };
+
+function buildRules(map: Record<string, string[]>): Rule[] {
+	const rules: Rule[] = [];
+	for (const [kategori, keywords] of Object.entries(map)) {
+		for (const kw of keywords) {
+			rules.push({ regex: new RegExp(`\\b${escRe(kw)}\\b`, 'i'), kategori });
+		}
+	}
+	return rules;
+}
+
+const incomeRules = buildRules(categories.income);
+const expenseRules = buildRules(categories.expense);
 
 function classifyCategory(jenis: string, keterangan: string): string {
 	const desc = (keterangan || '').toLowerCase();
-	if (jenis === 'Masuk') {
-		for (const [keyword, category] of incomeKeywords) {
-			if (desc.includes(keyword)) return category;
-		}
-		return 'Pemasukan Lain';
-	} else {
-		for (const [keyword, category] of expenseKeywords) {
-			if (desc.includes(keyword)) return category;
-		}
-		return 'Pengeluaran Lain';
+	const rules = jenis === 'Masuk' ? incomeRules : expenseRules;
+	for (const { regex, kategori } of rules) {
+		if (regex.test(desc)) return kategori;
 	}
+	return jenis === 'Masuk' ? 'Pemasukan Lain' : 'Pengeluaran Lain';
 }
 
 // --- Sheet parsing ---
@@ -192,6 +106,7 @@ function parseSheetRows(rows: string[][]): Transaksi[] {
 		result.push({
 			id: `sheet-${i}-${Date.now()}`,
 			tanggal,
+			user: String(user || '').trim(),
 			kategori,
 			keterangan: keteranganStr,
 			jenis,

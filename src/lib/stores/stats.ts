@@ -7,6 +7,18 @@ export const loading = writable<boolean>(true);
 export const lastSync = writable<string>('');
 export const connected = writable<boolean>(false);
 
+// Derived: unique users from all transactions
+export const users = derived(
+	transactions,
+	($tx) => {
+		const set = new Set<string>();
+		for (const t of $tx) {
+			if (t.user) set.add(t.user);
+		}
+		return [...set].sort();
+	}
+);
+
 // Derived: filtered transactions based on filterStore, sorted by tanggal desc (terbaru di atas)
 export const filteredTransactions = derived(
 	[transactions, filterStore],
@@ -16,6 +28,10 @@ export const filteredTransactions = derived(
 			: { startDate: $filterStore.startDate || '', endDate: $filterStore.endDate || '' };
 
 		let result = $transactions;
+
+		if ($filterStore.user) {
+			result = result.filter(t => t.user === $filterStore.user);
+		}
 
 		if (startDate || endDate) {
 			result = result.filter(t => {

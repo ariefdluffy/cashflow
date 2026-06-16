@@ -4,7 +4,8 @@ import type { FilterParams } from '$lib/types';
 export const filterStore = writable<FilterParams>({
 	startDate: null,
 	endDate: null,
-	preset: 'today'
+	preset: 'today',
+	user: null
 });
 
 /**

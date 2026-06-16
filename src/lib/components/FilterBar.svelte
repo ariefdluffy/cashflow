@@ -1,5 +1,6 @@
 <script lang="ts">
 	import { filterStore } from '$lib/stores/filters';
+	import { transactions, users } from '$lib/stores/stats';
 	import type { FilterParams } from '$lib/types';
 
 	const presets: { value: FilterParams['preset']; label: string }[] = [
@@ -12,6 +13,7 @@
 	];
 
 	let currentPreset = $state<FilterParams['preset']>('today');
+	let selectedUser = $state<string>('');
 	let startDate = $state('');
 	let endDate = $state('');
 	let showCustom = $state(false);
@@ -19,7 +21,7 @@
 	function setPreset(preset: FilterParams['preset']) {
 		currentPreset = preset;
 		showCustom = preset === 'custom';
-		filterStore.set({ preset, startDate: null, endDate: null });
+		filterStore.set({ preset, startDate: null, endDate: null, user: selectedUser || null });
 	}
 
 	function applyCustom() {
@@ -27,15 +29,22 @@
 			filterStore.set({
 				preset: 'custom',
 				startDate,
-				endDate
+				endDate,
+				user: selectedUser || null
 			});
 		}
+	}
+
+	function setUser(user: string) {
+		selectedUser = user;
+		filterStore.update(f => ({ ...f, user: user || null }));
 	}
 
 	// Restore from store
 	$effect(() => {
 		const unsub = filterStore.subscribe(f => {
 			currentPreset = f.preset;
+			selectedUser = f.user || '';
 			if (f.preset === 'custom') {
 				showCustom = true;
 				startDate = f.startDate || '';
@@ -46,7 +55,7 @@
 	});
 </script>
 
-<div class="card">
+<div class="card space-y-3">
 	<div class="flex flex-wrap items-center gap-2">
 		{#each presets as p}
 			<button
@@ -74,7 +83,7 @@
 	</div>
 
 	{#if showCustom}
-		<div class="flex flex-wrap items-center gap-3 mt-3 pt-3 border-t border-(--border-color)">
+		<div class="flex flex-wrap items-center gap-3 pt-2">
 			<div class="flex items-center gap-2">
 				<label for="start-date" class="text-sm text-slate-500">Dari:</label>
 				<input
@@ -102,4 +111,20 @@
 			</button>
 		</div>
 	{/if}
+
+	<!-- User filter -->
+	<div class="flex items-center gap-2 pt-2 border-t border-(--border-color)">
+		<label for="user-filter" class="text-sm font-medium text-slate-500">User:</label>
+		<select
+			id="user-filter"
+			value={selectedUser}
+			onchange={(e) => setUser((e.target as HTMLSelectElement).value)}
+			class="px-3 py-1.5 text-sm rounded-lg border border-(--border-color) bg-(--card-bg) text-(--text-color) focus:outline-none focus:ring-2 focus:ring-(--color-primary)/50 min-w-[140px]"
+		>
+			<option value="">Semua User</option>
+			{#each $users as user}
+				<option value={user}>{user}</option>
+			{/each}
+		</select>
+	</div>
 </div>
