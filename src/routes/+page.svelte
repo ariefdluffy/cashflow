@@ -13,10 +13,20 @@
 		transactions, loading, lastSync, connected,
 		filteredTransactions, stats, chartData, categoryData,
 		activityLog, forecast, burnRate, topCategories, monthlyTrend,
-		incomeCategoryData, categoryComparison
+		incomeCategoryData, categoryComparison, runningBalance
 	} from '$lib/stores/stats';
+	import { filterStore } from '$lib/stores/filters';
 	import { fetchTransactions } from '$lib/api';
 	import { formatRp } from '$lib/utils/format';
+
+	let { data } = $props();
+
+	// Kunci filter user ke user yang login
+	$effect(() => {
+		if (data.user) {
+			filterStore.update((f) => (f.user === data.user ? f : { ...f, user: data.user }));
+		}
+	});
 
 	let sseConn: EventSource | null = null;
 
@@ -70,7 +80,7 @@
 	}
 </script>
 
-<Header />
+<Header user={data.user} />
 
 <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 space-y-6">
 	<FilterBar />
@@ -84,13 +94,33 @@
 		</div>
 	{:else}
 		<!-- Stats Cards -->
-		<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
+		<div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
 			<StatCard title="Total Pemasukan" value={formatRp($stats.totalIncome)} icon="📈" color="success" trend="up" trendValue="Pemasukan" />
 			<StatCard title="Total Pengeluaran" value={formatRp($stats.totalExpense)} icon="📉" color="danger" trend="down" trendValue="Pengeluaran" />
 			<StatCard title="Saldo Bersih" value={formatRp($stats.balance)} icon="💰" color={$stats.balance >= 0 ? 'success' : 'danger'} trend={$stats.balance >= 0 ? 'up' : 'down'} trendValue="Saldo" />
+			<StatCard title="Saldo Berjalan" value={formatRp($runningBalance)} icon="💸" color="info" trend="neutral" trendValue="Akumulasi" />
 			<StatCard title="Jumlah Transaksi" value={$stats.totalTransactions.toLocaleString('id-ID')} icon="📋" color="primary" />
 			<StatCard title="Rata-rata Harian" value={formatRp($stats.averageDaily)} icon="📊" color="info" />
 			<StatCard title="Pengeluaran Terbesar" value={formatRp($stats.largestExpense)} icon="🔥" color="warning" />
+		</div>
+
+		<!-- Keterangan Saldo -->
+		<div class="card bg-gradient-to-r from-slate-50 to-slate-100 dark:from-slate-800/40 dark:to-slate-800/10 border-(--border-color)">
+			<div class="flex items-center gap-3">
+				<span class="text-2xl">📝</span>
+				<div class="space-y-0.5">
+					<p class="text-sm font-medium text-slate-600 dark:text-slate-300">Keterangan Saldo</p>
+					<p class="text-lg font-bold text-(--text-color)">
+						Saldo berjalan {formatRp($runningBalance)}
+						<span class={$runningBalance >= 0 ? 'text-(--color-success)' : 'text-(--color-danger)'}>
+							({$runningBalance >= 0 ? 'Surplus' : 'Defisit'})
+						</span>
+					</p>
+					<p class="text-xs text-slate-500 dark:text-slate-400">
+						Pemasukan {formatRp($stats.totalIncome)} − Pengeluaran {formatRp($stats.totalExpense)} = {formatRp($stats.balance)}
+					</p>
+				</div>
+			</div>
 		</div>
 
 		<!-- Burn Rate -->
